@@ -1,0 +1,60 @@
+[project]
+name = "conversion-uplift-experimentation-project"
+version = "0.1.0"
+description = "End-to-end experimentation analytics project using MySQL, Python, uplift modeling, and Power BI."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "sqlalchemy>=2.0",
+    "pymysql>=1.1",
+    "python-dotenv>=1.0",
+    "scikit-learn>=1.5",
+    "matplotlib>=3.9",
+    "scikit-uplift>=0.5.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytask>=0.5.8",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra"
+
+[tool.pytask.ini_options]
+paths = ["tasks"]
+task_files = ["task_*.py"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "win-64"]
+
+[tool.pixi.pypi-dependencies]
+conversion-uplift-experimentation-project = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+test = "pytest"
+pipeline = "pytask"
+db-test = "python -m conversion_uplift.database"
+ingest = "python -m conversion_uplift.ingest"
+preprocess = "python -m conversion_uplift.preprocess"
+analyze = "python -m conversion_uplift.analysis"
+model = "python -m conversion_uplift.modeling"
+uplift = "python -m conversion_uplift.uplift"
+export = "python -m conversion_uplift.export"
