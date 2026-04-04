@@ -7,10 +7,12 @@ project can reuse one consistent database connection pattern.
 Main responsibilities:
 - Build a SQLAlchemy engine
 - Test database connectivity
+- Read SQL tables into pandas DataFrames
 """
 
 from __future__ import annotations
 
+import pandas as pd
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 
@@ -32,6 +34,21 @@ def get_engine() -> Engine:
         future=True,
     )
     return engine
+
+
+def read_table(table_name: str) -> pd.DataFrame:
+    """
+    Read a full SQL table into a pandas DataFrame.
+
+    Args:
+        table_name: Name of the database table to read.
+
+    Returns:
+        pd.DataFrame: Table contents.
+    """
+    engine = get_engine()
+    query = f"SELECT * FROM {table_name}"
+    return pd.read_sql(query, engine)
 
 
 def test_connection() -> None:
