@@ -14,7 +14,34 @@ The main business questions were:
 
 ---
 
-## 2. Data Validation Summary
+## 2. Entity Relationship Diagram
+
+The SQL layer is built on a normalized MySQL schema designed for experimentation analytics.  
+The schema separates customer attributes, campaign assignment, and campaign outcomes into dimension and fact tables for cleaner validation, analysis, and reporting.
+
+![Entity Relationship Diagram](schema/conversion_uplift_er_diagram.png)
+
+### Interpretation
+The schema is centered around four dimension tables:
+
+- `dim_campaign`
+- `dim_channel`
+- `dim_zip_code`
+- `dim_customers`
+
+and two fact tables:
+
+- `fact_campaign_assignment`
+- `fact_campaign_outcomes`
+
+This design supports:
+- validation of experimental group structure
+- clean joins across customer and campaign data
+- reusable reporting views for Power BI and Python exports
+
+---
+
+## 3. Data Validation Summary
 
 The SQL validation queries confirmed that the normalized MySQL schema was loaded correctly.
 
@@ -39,7 +66,7 @@ Key confirmed points:
 
 ---
 
-## 3. Experiment Group Balance
+## 4. Experiment Group Balance
 
 ### Customer counts by campaign segment
 
@@ -54,7 +81,7 @@ The experiment groups are very well balanced. This supports meaningful compariso
 
 ---
 
-## 4. Core KPI Summary by Campaign Segment
+## 5. Core KPI Summary by Campaign Segment
 
 | Segment | Customer Count | Visit Rate | Conversion Rate | Avg Spend / Customer | Avg Spend / Converter | Total Spend |
 |---|---:|---:|---:|---:|---:|---:|
@@ -77,7 +104,7 @@ A notable nuance is that Womens E-Mail has the highest average spend per convert
 
 ---
 
-## 5. Treatment vs Control Summary
+## 6. Treatment vs Control Summary
 
 | Binary Treatment Flag | Customer Count | Visit Rate | Conversion Rate | Avg Spend / Customer | Total Spend |
 |---|---:|---:|---:|---:|---:|
@@ -96,7 +123,7 @@ This directly supports the later uplift modeling phase.
 
 ---
 
-## 6. Uplift vs Control
+## 7. Uplift vs Control
 
 | Segment | Visit Rate | Absolute Visit Uplift | Relative Visit Lift | Conversion Rate | Absolute Conversion Uplift | Relative Conversion Lift | Avg Spend / Customer | Absolute Spend Uplift |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -116,36 +143,36 @@ This is one of the most important findings of the SQL phase.
 
 ---
 
-## 7. Segment-Level Findings
+## 8. Segment-Level Findings
 
-### 7.1 Channel-level findings
+### 8.1 Channel-level findings
 The channel-level summary suggests that **Multichannel** customers respond particularly well to treatment. Campaign performance is still positive for Web and Phone groups, but the strongest results appear in Multichannel and Web for some metrics.
 
 This indicates that customer channel behavior may be an important segmentation variable for targeting.
 
-### 7.2 Zip-code-level findings
+### 8.2 Zip-code-level findings
 The zip-code summary shows that **Rural** customers respond especially well to campaign treatment, particularly under the Mens E-Mail campaign.
 
 This suggests geographic category may influence responsiveness and could be useful in later modeling and targeting strategies.
 
-### 7.3 New vs existing customers
+### 8.3 New vs existing customers
 The `newbie` summary suggests that **existing customers** generally respond more strongly than newer customers, especially for visit rate and spend per customer.
 
 This aligns with common CRM behavior where more established customers are easier to reactivate.
 
-### 7.4 Merchandise affinity
+### 8.4 Merchandise affinity
 The merchandise-affinity breakdown shows particularly strong results among customers with stronger prior merchandise engagement. In the subset where both `mens = 1` and `womens = 1`, the Mens E-Mail campaign performs very strongly.
 
 This suggests that prior category affinity is likely an important predictor of treatment response.
 
-### 7.5 History segment
+### 8.5 History segment
 The history-segment summary shows that customers with stronger historical value generally produce stronger campaign outcomes. Higher-spend history groups show higher visit, conversion, and spend outcomes than lower-spend groups.
 
 This supports the idea that customer value history should play an important role in targeting decisions.
 
 ---
 
-## 8. Main Business Insights
+## 9. Main Business Insights
 
 The SQL analysis suggests the following:
 
@@ -163,7 +190,7 @@ The SQL analysis suggests the following:
 
 ---
 
-## 9. Recommendations Based on SQL Alone
+## 10. Recommendations Based on SQL Alone
 
 Based on the SQL findings alone, a business team could reasonably consider:
 
@@ -180,7 +207,7 @@ These are still aggregate findings. A more precise treatment strategy requires c
 
 ---
 
-## 10. Reporting View Layer
+## 11. Reporting View Layer
 
 To make the SQL output reusable, the project also includes reporting views such as:
 
@@ -201,7 +228,7 @@ These views provide a cleaner reporting layer for:
 
 ---
 
-## 11. Next Analytical Step
+## 12. Next Analytical Step
 
 The SQL phase answers the main aggregate business questions, but it does not yet tell us which **individual customers** should receive treatment.
 
