@@ -8,3 +8,7 @@ __pycache__/
 *.egg-info/
 .DS_Store
 outputs/reports/
+!outputs/reports/
+!outputs/reports/powerbi/
+!outputs/reports/powerbi/*.png
+!outputs/reports/sql_analysis_summary.md
