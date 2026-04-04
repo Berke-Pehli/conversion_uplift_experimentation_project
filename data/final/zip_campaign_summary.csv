@@ -1,0 +1,10 @@
+zip_code_name,segment,campaign_type,customer_count,visit_rate,conversion_rate,avg_spend_per_customer,total_spend
+Suburban,Womens E-Mail,womens_email,9650,0.1479,0.0076,0.8466,8169.82
+Rural,No E-Mail,control,3139,0.1536,0.0083,0.7671,2408.04
+Rural,Mens E-Mail,mens_email,3243,0.227,0.0136,1.5226,4937.91
+Urban,Womens E-Mail,womens_email,8556,0.1438,0.0092,1.2611,10790.32
+Urban,Mens E-Mail,mens_email,8563,0.1765,0.0123,1.3285,11376.05
+Urban,No E-Mail,control,8542,0.0968,0.0056,0.592,5056.91
+Suburban,Mens E-Mail,mens_email,9501,0.1734,0.0124,1.4733,13997.73
+Suburban,No E-Mail,control,9625,0.099,0.005,0.6694,6443.38
+Rural,Womens E-Mail,womens_email,3181,0.1826,0.0116,1.282,4077.97

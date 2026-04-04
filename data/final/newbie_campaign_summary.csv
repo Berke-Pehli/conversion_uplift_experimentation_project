@@ -1,0 +1,7 @@
+newbie,segment,campaign_type,customer_count,visit_rate,conversion_rate,avg_spend_per_customer,total_spend
+0,Womens E-Mail,womens_email,10624,0.1739,0.0087,1.0493,11147.84
+1,No E-Mail,control,10695,0.0788,0.0037,0.3724,3983.33
+1,Womens E-Mail,womens_email,10763,0.1292,0.009,1.1047,11890.27
+1,Mens E-Mail,mens_email,10686,0.1541,0.0111,1.3325,14238.75
+0,Mens E-Mail,mens_email,10621,0.2116,0.0139,1.5133,16072.94
+0,No E-Mail,control,10611,0.1337,0.0077,0.9354,9925.0

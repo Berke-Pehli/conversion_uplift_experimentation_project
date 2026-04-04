@@ -1,0 +1,10 @@
+channel_name,segment,campaign_type,customer_count,visit_rate,conversion_rate,avg_spend_per_customer,total_spend
+Phone,Womens E-Mail,womens_email,9454,0.1318,0.0071,0.8769,8290.46
+Web,No E-Mail,control,9373,0.1189,0.0058,0.6714,6292.9
+Web,Womens E-Mail,womens_email,9354,0.1645,0.0092,1.0877,10174.37
+Web,Mens E-Mail,mens_email,9490,0.1944,0.013,1.5218,14442.21
+Phone,Mens E-Mail,mens_email,9240,0.1628,0.0108,1.2085,11166.79
+Multichannel,Womens E-Mail,womens_email,2579,0.1756,0.014,1.7733,4573.28
+Multichannel,No E-Mail,control,2606,0.1285,0.0069,0.6157,1604.62
+Multichannel,Mens E-Mail,mens_email,2577,0.2115,0.0171,1.8249,4702.69
+Phone,No E-Mail,control,9327,0.0872,0.0054,0.6445,6010.81

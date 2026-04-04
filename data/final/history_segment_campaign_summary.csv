@@ -1,0 +1,22 @@
+history_segment,segment,campaign_type,customer_count,visit_rate,conversion_rate,avg_spend_per_customer,total_spend
+2) $100 - $200,Womens E-Mail,womens_email,4727,0.1335,0.0078,0.8813,4165.85
+3) $200 - $350,No E-Mail,control,4044,0.1264,0.0069,0.9329,3772.57
+5) $500 - $750,Mens E-Mail,mens_email,1597,0.2085,0.0138,1.6419,2622.06
+1) $0 - $100,Womens E-Mail,womens_email,7634,0.1316,0.008,1.1427,8723.47
+3) $200 - $350,Womens E-Mail,womens_email,4155,0.1625,0.0063,0.6097,2533.47
+5) $500 - $750,Womens E-Mail,womens_email,1662,0.1757,0.0156,1.8245,3032.33
+2) $100 - $200,Mens E-Mail,mens_email,4691,0.1601,0.009,1.1271,5287.43
+1) $0 - $100,No E-Mail,control,7612,0.0849,0.0042,0.5169,3934.59
+1) $0 - $100,Mens E-Mail,mens_email,7724,0.1534,0.0092,1.0552,8150.18
+3) $200 - $350,Mens E-Mail,mens_email,4090,0.2108,0.0154,1.4695,6010.1
+"6) $750 - $1,000",Mens E-Mail,mens_email,644,0.2158,0.0248,1.8837,1213.09
+4) $350 - $500,No E-Mail,control,2124,0.1502,0.0113,1.0103,2145.81
+2) $100 - $200,No E-Mail,control,4836,0.091,0.0041,0.4229,2045.12
+5) $500 - $750,No E-Mail,control,1652,0.1096,0.0054,0.5389,890.19
+"7) $1,000 +",Womens E-Mail,womens_email,428,0.2196,0.0257,4.6766,2001.58
+4) $350 - $500,Mens E-Mail,mens_email,2097,0.2394,0.02,2.5792,5408.6
+"7) $1,000 +",Mens E-Mail,mens_email,464,0.2629,0.0237,3.4919,1620.23
+"7) $1,000 +",No E-Mail,control,416,0.1659,0.0144,2.1698,902.64
+4) $350 - $500,Womens E-Mail,womens_email,2188,0.1906,0.0091,0.9094,1989.72
+"6) $750 - $1,000",Womens E-Mail,womens_email,593,0.2091,0.0135,0.9978,591.69
+"6) $750 - $1,000",No E-Mail,control,622,0.1543,0.0048,0.3495,217.41

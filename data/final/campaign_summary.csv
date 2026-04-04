@@ -1,0 +1,4 @@
+segment,campaign_type,binary_treatment_flag,customer_count,visit_rate,conversion_rate,avg_spend_per_customer,total_spend,avg_spend_per_converter
+Mens E-Mail,mens_email,1,21307,0.1828,0.0125,1.4226,30311.69,113.5269
+Womens E-Mail,womens_email,1,21387,0.1514,0.0088,1.0772,23038.11,121.8948
+No E-Mail,control,0,21306,0.1062,0.0057,0.6528,13908.33,114.0027
