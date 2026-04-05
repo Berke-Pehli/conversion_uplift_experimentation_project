@@ -1,0 +1,2 @@
+n_exported_files,exported_view_names,exported_file_names
+8,"vw_customer_experiment_detail, vw_campaign_summary, vw_treatment_control_summary, vw_segment_uplift_summary, vw_channel_campaign_summary, vw_zip_campaign_summary, vw_newbie_campaign_summary, vw_history_segment_campaign_summary","customer_experiment_detail.csv, campaign_summary.csv, treatment_control_summary.csv, segment_uplift_summary.csv, channel_campaign_summary.csv, zip_campaign_summary.csv, newbie_campaign_summary.csv, history_segment_campaign_summary.csv"

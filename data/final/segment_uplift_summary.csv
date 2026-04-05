@@ -1,4 +1,4 @@
 segment,visit_rate,absolute_visit_uplift,relative_visit_lift,conversion_rate,absolute_conversion_uplift,relative_conversion_lift,avg_spend_per_customer,absolute_spend_uplift
+Mens E-Mail,0.1828,0.0766,0.721281,0.0125,0.0068,1.192982,1.422617,0.769828
 Womens E-Mail,0.1514,0.0452,0.425612,0.0088,0.0031,0.54386,1.077202,0.424413
 No E-Mail,0.1062,0.0,0.0,0.0057,0.0,0.0,0.652789,0.0
-Mens E-Mail,0.1828,0.0766,0.721281,0.0125,0.0068,1.192982,1.422617,0.769828
