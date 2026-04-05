@@ -1,0 +1,4 @@
+target,model_name,accuracy,precision,recall,f1_score,roc_auc,pr_auc,positive_prediction_rate,true_negative,false_positive,false_negative,true_positive
+conversion,logistic_regression_balanced,0.605234375,0.013404297260003943,0.5862068965517241,0.026209288880323763,0.647283028306093,0.01579901162763223,0.396328125,7679,5005,48,68
+conversion,random_forest_classifier_balanced,0.98125,0.0,0.0,0.0,0.5119091796344022,0.00912680326120567,0.0096875,12560,124,116,0
+conversion,decision_tree_classifier_balanced,0.97515625,0.0,0.0,0.0,0.49203721223588776,0.0090625,0.01578125,12482,202,116,0
