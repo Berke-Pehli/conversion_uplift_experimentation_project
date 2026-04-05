@@ -4,11 +4,21 @@ Pytask task for baseline model scoring in the conversion uplift project.
 
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 from typing import Annotated
 
 from pytask import Product
 
+from conversion_uplift.config import (
+    BLD_CHARTS_DIR,
+    BLD_DATA_FINAL_DIR,
+    BLD_REPORTS_DIR,
+    CHARTS_DIR,
+    FINAL_DATA_DIR,
+    REPORTS_DIR,
+    create_build_directories,
+)
 from conversion_uplift.modeling import (
     apply_chart_style,
     create_output_directories,
@@ -23,32 +33,33 @@ from conversion_uplift.modeling import (
 )
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+FEATURES_FILE = FINAL_DATA_DIR / "modeling_features_encoded.csv"
+TARGET_CONVERSION_FILE = FINAL_DATA_DIR / "modeling_target_conversion.csv"
+TARGET_VISIT_FILE = FINAL_DATA_DIR / "modeling_target_visit.csv"
+TARGET_SPEND_FILE = FINAL_DATA_DIR / "modeling_target_spend.csv"
 
-FEATURES_FILE = PROJECT_ROOT / "data" / "final" / "modeling_features_encoded.csv"
-TARGET_CONVERSION_FILE = PROJECT_ROOT / "data" / "final" / "modeling_target_conversion.csv"
-TARGET_VISIT_FILE = PROJECT_ROOT / "data" / "final" / "modeling_target_visit.csv"
-TARGET_SPEND_FILE = PROJECT_ROOT / "data" / "final" / "modeling_target_spend.csv"
+CONVERSION_METRICS_FILE = REPORTS_DIR / "modeling_classification_conversion_metrics.csv"
+VISIT_METRICS_FILE = REPORTS_DIR / "modeling_classification_visit_metrics.csv"
+SPEND_METRICS_FILE = REPORTS_DIR / "modeling_regression_spend_metrics.csv"
 
-CONVERSION_METRICS_FILE = (
-    PROJECT_ROOT / "outputs" / "reports" / "modeling_classification_conversion_metrics.csv"
-)
-VISIT_METRICS_FILE = (
-    PROJECT_ROOT / "outputs" / "reports" / "modeling_classification_visit_metrics.csv"
-)
-SPEND_METRICS_FILE = (
-    PROJECT_ROOT / "outputs" / "reports" / "modeling_regression_spend_metrics.csv"
-)
+CONVERSION_PR_AUC_CHART = CHARTS_DIR / "conversion_model_pr_auc_comparison.png"
+VISIT_PR_AUC_CHART = CHARTS_DIR / "visit_model_pr_auc_comparison.png"
+SPEND_RMSE_CHART = CHARTS_DIR / "spend_model_rmse_comparison.png"
 
-CONVERSION_PR_AUC_CHART = (
-    PROJECT_ROOT / "outputs" / "charts" / "conversion_model_pr_auc_comparison.png"
+BLD_FEATURES_FILE = BLD_DATA_FINAL_DIR / "modeling_features_encoded.csv"
+BLD_TARGET_CONVERSION_FILE = BLD_DATA_FINAL_DIR / "modeling_target_conversion.csv"
+BLD_TARGET_VISIT_FILE = BLD_DATA_FINAL_DIR / "modeling_target_visit.csv"
+BLD_TARGET_SPEND_FILE = BLD_DATA_FINAL_DIR / "modeling_target_spend.csv"
+
+BLD_CONVERSION_METRICS_FILE = (
+    BLD_REPORTS_DIR / "modeling_classification_conversion_metrics.csv"
 )
-VISIT_PR_AUC_CHART = (
-    PROJECT_ROOT / "outputs" / "charts" / "visit_model_pr_auc_comparison.png"
-)
-SPEND_RMSE_CHART = (
-    PROJECT_ROOT / "outputs" / "charts" / "spend_model_rmse_comparison.png"
-)
+BLD_VISIT_METRICS_FILE = BLD_REPORTS_DIR / "modeling_classification_visit_metrics.csv"
+BLD_SPEND_METRICS_FILE = BLD_REPORTS_DIR / "modeling_regression_spend_metrics.csv"
+
+BLD_CONVERSION_PR_AUC_CHART = BLD_CHARTS_DIR / "conversion_model_pr_auc_comparison.png"
+BLD_VISIT_PR_AUC_CHART = BLD_CHARTS_DIR / "visit_model_pr_auc_comparison.png"
+BLD_SPEND_RMSE_CHART = BLD_CHARTS_DIR / "spend_model_rmse_comparison.png"
 
 
 def task_model_scoring(
@@ -65,14 +76,25 @@ def task_model_scoring(
 ) -> None:
     """
     Train and score baseline models from prepared feature datasets.
+
+    The task writes the canonical tracked outputs to `outputs/reports/` and
+    `outputs/charts/`, and also writes mirrored build copies into `bld/`.
     """
+    create_build_directories()
     create_output_directories()
     apply_chart_style()
 
-    features_df = load_csv(depends_on_features)
-    conversion_df = load_csv(depends_on_conversion)
-    visit_df = load_csv(depends_on_visit)
-    spend_df = load_csv(depends_on_spend)
+    features_path = depends_on_features if depends_on_features.exists() else BLD_FEATURES_FILE
+    conversion_path = (
+        depends_on_conversion if depends_on_conversion.exists() else BLD_TARGET_CONVERSION_FILE
+    )
+    visit_path = depends_on_visit if depends_on_visit.exists() else BLD_TARGET_VISIT_FILE
+    spend_path = depends_on_spend if depends_on_spend.exists() else BLD_TARGET_SPEND_FILE
+
+    features_df = load_csv(features_path)
+    conversion_df = load_csv(conversion_path)
+    visit_df = load_csv(visit_path)
+    spend_df = load_csv(spend_path)
 
     X, _ = prepare_feature_matrix(features_df)
 
@@ -100,6 +122,10 @@ def task_model_scoring(
     save_dataframe(visit_results, produces_visit_metrics)
     save_dataframe(spend_results, produces_spend_metrics)
 
+    save_dataframe(conversion_results, BLD_CONVERSION_METRICS_FILE)
+    save_dataframe(visit_results, BLD_VISIT_METRICS_FILE)
+    save_dataframe(spend_results, BLD_SPEND_METRICS_FILE)
+
     plot_classification_metric_comparison(
         results_df=conversion_results,
         metric_column="pr_auc",
@@ -123,3 +149,7 @@ def task_model_scoring(
         title="Spend Model RMSE Comparison",
         fmt="{:.2f}",
     )
+
+    shutil.copy2(produces_conversion_chart, BLD_CONVERSION_PR_AUC_CHART)
+    shutil.copy2(produces_visit_chart, BLD_VISIT_PR_AUC_CHART)
+    shutil.copy2(produces_spend_chart, BLD_SPEND_RMSE_CHART)

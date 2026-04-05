@@ -1,25 +1,66 @@
 """
 Configuration utilities for the conversion uplift project.
 
-This module is responsible for loading environment variables from the local
-`.env` file and exposing them in a clean, reusable structure for the rest
-of the project.
-
-Main responsibilities:
-- Load environment variables
-- Validate required MySQL settings
-- Build a SQLAlchemy database URL
+This module is responsible for:
+- loading environment variables from the local `.env` file
+- validating required MySQL settings
+- building a SQLAlchemy database URL
+- exposing reusable project path constants, including build paths
 """
 
 from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 from dotenv import load_dotenv
 
 
 load_dotenv()
+
+
+# ---------------------------------------------------------------------
+# Project paths
+# ---------------------------------------------------------------------
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+DATA_DIR = PROJECT_ROOT / "data"
+RAW_DATA_DIR = DATA_DIR / "raw"
+PROCESSED_DATA_DIR = DATA_DIR / "processed"
+FINAL_DATA_DIR = DATA_DIR / "final"
+
+OUTPUTS_DIR = PROJECT_ROOT / "outputs"
+CHARTS_DIR = OUTPUTS_DIR / "charts"
+REPORTS_DIR = OUTPUTS_DIR / "reports"
+
+DOCS_DIR = PROJECT_ROOT / "docs"
+SQL_DIR = PROJECT_ROOT / "sql"
+POWERBI_DIR = PROJECT_ROOT / "powerbi"
+TASKS_DIR = PROJECT_ROOT / "tasks"
+TESTS_DIR = PROJECT_ROOT / "tests"
+
+# ---------------------------------------------------------------------
+# Reproducible build paths (ignored by Git)
+# ---------------------------------------------------------------------
+
+BLD_DIR = PROJECT_ROOT / "bld"
+BLD_DATA_DIR = BLD_DIR / "data"
+BLD_DATA_PROCESSED_DIR = BLD_DATA_DIR / "processed"
+BLD_DATA_FINAL_DIR = BLD_DATA_DIR / "final"
+BLD_CHARTS_DIR = BLD_DIR / "charts"
+BLD_REPORTS_DIR = BLD_DIR / "reports"
+
+
+def create_build_directories() -> None:
+    """
+    Create the reproducible build folder structure if it does not exist.
+    """
+    BLD_DATA_PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+    BLD_DATA_FINAL_DIR.mkdir(parents=True, exist_ok=True)
+    BLD_CHARTS_DIR.mkdir(parents=True, exist_ok=True)
+    BLD_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @dataclass(frozen=True)

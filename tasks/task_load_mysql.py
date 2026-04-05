@@ -10,6 +10,13 @@ from typing import Annotated
 import pandas as pd
 from pytask import Product
 
+from conversion_uplift.config import (
+    BLD_DATA_PROCESSED_DIR,
+    BLD_REPORTS_DIR,
+    PROCESSED_DATA_DIR,
+    REPORTS_DIR,
+    create_build_directories,
+)
 from conversion_uplift.database import get_engine
 from conversion_uplift.load_mysql import (
     build_dim_customers,
@@ -20,10 +27,10 @@ from conversion_uplift.load_mysql import (
 )
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
-PROCESSED_DATA_FILE = PROJECT_ROOT / "data" / "processed" / "hillstrom_processed.csv"
-MYSQL_LOAD_SUMMARY_FILE = PROJECT_ROOT / "outputs" / "reports" / "mysql_load_summary.csv"
+PROCESSED_DATA_FILE = PROCESSED_DATA_DIR / "hillstrom_processed.csv"
+MYSQL_LOAD_SUMMARY_FILE = REPORTS_DIR / "mysql_load_summary.csv"
+BLD_PROCESSED_DATA_FILE = BLD_DATA_PROCESSED_DIR / "hillstrom_processed.csv"
+BLD_MYSQL_LOAD_SUMMARY_FILE = BLD_REPORTS_DIR / "mysql_load_summary.csv"
 
 
 def task_load_mysql(
@@ -32,8 +39,14 @@ def task_load_mysql(
 ) -> None:
     """
     Load processed data into the normalized MySQL tables and save a small summary.
+
+    The task writes the canonical tracked output to `outputs/reports/`
+    and also writes a mirrored build copy into `bld/reports/`.
     """
-    _ = depends_on
+    create_build_directories()
+
+    source_path = depends_on if depends_on.exists() else BLD_PROCESSED_DATA_FILE
+    _ = source_path
 
     df = load_processed_data()
 
@@ -97,3 +110,4 @@ def task_load_mysql(
 
     produces.parent.mkdir(parents=True, exist_ok=True)
     summary_df.to_csv(produces, index=False)
+    summary_df.to_csv(BLD_MYSQL_LOAD_SUMMARY_FILE, index=False)

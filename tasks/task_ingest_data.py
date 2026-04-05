@@ -10,13 +10,18 @@ from typing import Annotated
 import pandas as pd
 from pytask import Product
 
+from conversion_uplift.config import (
+    BLD_REPORTS_DIR,
+    RAW_DATA_DIR,
+    REPORTS_DIR,
+    create_build_directories,
+)
 from conversion_uplift.ingest import load_raw_data, validate_raw_columns
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
-RAW_DATA_FILE = PROJECT_ROOT / "data" / "raw" / "hillstrom.csv"
-INGEST_VALIDATION_FILE = PROJECT_ROOT / "outputs" / "reports" / "raw_data_ingestion_summary.csv"
+RAW_DATA_FILE = RAW_DATA_DIR / "hillstrom.csv"
+INGEST_VALIDATION_FILE = REPORTS_DIR / "raw_data_ingestion_summary.csv"
+BLD_INGEST_VALIDATION_FILE = BLD_REPORTS_DIR / "raw_data_ingestion_summary.csv"
 
 
 def task_ingest_data(
@@ -25,8 +30,13 @@ def task_ingest_data(
 ) -> None:
     """
     Validate raw data ingestion and save a small ingestion summary report.
+
+    The task writes the canonical tracked output to `outputs/reports/`
+    and also writes a mirrored build copy into `bld/reports/`.
     """
     _ = depends_on
+
+    create_build_directories()
 
     df = load_raw_data()
     validate_raw_columns(df)
@@ -41,3 +51,4 @@ def task_ingest_data(
 
     produces.parent.mkdir(parents=True, exist_ok=True)
     summary_df.to_csv(produces, index=False)
+    summary_df.to_csv(BLD_INGEST_VALIDATION_FILE, index=False)
