@@ -14,7 +14,7 @@ Main responsibilities:
 - Compare original campaign groups
 - Build segment-level summaries
 - Save clean CSV reports
-- Save clear matplotlib charts
+- Save polished matplotlib charts
 """
 
 from __future__ import annotations
@@ -31,7 +31,6 @@ PROCESSED_DATA_FILE = PROJECT_ROOT / "data" / "processed" / "hillstrom_processed
 OUTPUTS_REPORTS_DIR = PROJECT_ROOT / "outputs" / "reports"
 OUTPUTS_CHARTS_DIR = PROJECT_ROOT / "outputs" / "charts"
 
-OUTCOME_COLUMNS = ["visit", "conversion", "spend"]
 SEGMENT_COLUMNS = ["campaign_type", "channel", "zip_code", "history_segment"]
 
 
@@ -67,6 +66,21 @@ def create_output_directories() -> None:
     OUTPUTS_CHARTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def apply_chart_style() -> None:
+    """
+    Apply a consistent clean plotting style.
+    """
+    plt.rcParams.update(
+        {
+            "figure.figsize": (8, 5),
+            "axes.titlesize": 14,
+            "axes.labelsize": 11,
+            "xtick.labelsize": 10,
+            "ytick.labelsize": 10,
+        }
+    )
+
+
 def build_outcome_overview(df: pd.DataFrame) -> pd.DataFrame:
     """
     Build an overall summary of the three main business outcomes.
@@ -77,7 +91,7 @@ def build_outcome_overview(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: One-row summary table with core outcome metrics.
     """
-    summary = pd.DataFrame(
+    return pd.DataFrame(
         {
             "n_customers": [len(df)],
             "visit_rate": [df["visit"].mean()],
@@ -89,7 +103,6 @@ def build_outcome_overview(df: pd.DataFrame) -> pd.DataFrame:
             ],
         }
     )
-    return summary
 
 
 def build_treatment_control_summary(df: pd.DataFrame) -> pd.DataFrame:
@@ -140,6 +153,8 @@ def build_campaign_type_summary(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Campaign-type summary table.
     """
+    campaign_order = ["control", "womens_email", "mens_email"]
+
     summary = (
         df.groupby("campaign_type", as_index=False)
         .agg(
@@ -149,9 +164,15 @@ def build_campaign_type_summary(df: pd.DataFrame) -> pd.DataFrame:
             average_spend=("spend", "mean"),
             total_spend=("spend", "sum"),
         )
-        .sort_values("campaign_type")
     )
-    return summary
+
+    summary["campaign_type"] = pd.Categorical(
+        summary["campaign_type"],
+        categories=campaign_order,
+        ordered=True,
+    )
+
+    return summary.sort_values("campaign_type").reset_index(drop=True)
 
 
 def build_segment_summary(df: pd.DataFrame) -> pd.DataFrame:
@@ -201,9 +222,29 @@ def save_dataframe(df: pd.DataFrame, filename: str) -> Path:
     return output_path
 
 
+def add_bar_labels(ax: plt.Axes, fmt: str = "{:.3f}") -> None:
+    """
+    Add numeric labels above bar-chart bars.
+
+    Args:
+        ax: Matplotlib axes object.
+        fmt: Number format string.
+    """
+    for patch in ax.patches:
+        height = patch.get_height()
+        ax.annotate(
+            fmt.format(height),
+            (patch.get_x() + patch.get_width() / 2, height),
+            ha="center",
+            va="bottom",
+            xytext=(0, 4),
+            textcoords="offset points",
+        )
+
+
 def plot_campaign_outcome_rates(campaign_summary: pd.DataFrame) -> list[Path]:
     """
-    Create one chart per main outcome by campaign type.
+    Create polished bar charts for campaign-level outcomes.
 
     Args:
         campaign_summary: Campaign-level summary table.
@@ -214,31 +255,34 @@ def plot_campaign_outcome_rates(campaign_summary: pd.DataFrame) -> list[Path]:
     saved_paths: list[Path] = []
 
     chart_specs = [
-        ("visit_rate", "visit_rate_by_campaign_type.png", "Visit Rate by Campaign Type"),
+        ("visit_rate", "visit_rate_by_campaign_type.png", "Visit Rate by Campaign Type", "{:.3f}"),
         (
             "conversion_rate",
             "conversion_rate_by_campaign_type.png",
             "Conversion Rate by Campaign Type",
+            "{:.4f}",
         ),
         (
             "average_spend",
             "average_spend_by_campaign_type.png",
             "Average Spend by Campaign Type",
+            "{:.2f}",
         ),
     ]
 
-    for metric_column, filename, title in chart_specs:
-        plt.figure(figsize=(8, 5))
-        plt.bar(campaign_summary["campaign_type"], campaign_summary[metric_column])
-        plt.title(title)
-        plt.xlabel("Campaign Type")
-        plt.ylabel(metric_column.replace("_", " ").title())
-        plt.xticks(rotation=15)
-        plt.tight_layout()
+    for metric_column, filename, title, fmt in chart_specs:
+        fig, ax = plt.subplots()
+        ax.bar(campaign_summary["campaign_type"].astype(str), campaign_summary[metric_column])
+        ax.set_title(title)
+        ax.set_xlabel("Campaign Type")
+        ax.set_ylabel(metric_column.replace("_", " ").title())
+        ax.tick_params(axis="x", rotation=15)
+        add_bar_labels(ax, fmt=fmt)
+        fig.tight_layout()
 
         output_path = OUTPUTS_CHARTS_DIR / filename
-        plt.savefig(output_path, dpi=300, bbox_inches="tight")
-        plt.close()
+        fig.savefig(output_path, dpi=300, bbox_inches="tight")
+        plt.close(fig)
 
         saved_paths.append(output_path)
 
@@ -250,15 +294,17 @@ def plot_single_treatment_control_dumbbell(
     metric_column: str,
     filename: str,
     title: str,
+    fmt: str,
 ) -> Path:
     """
-    Create a single-metric dumbbell chart for treatment vs control.
+    Create a polished single-metric dumbbell chart for treatment vs control.
 
     Args:
         treatment_summary: Treatment/control summary table.
         metric_column: Metric column to compare.
         filename: Output filename.
         title: Chart title.
+        fmt: Value format string.
 
     Returns:
         Path: Saved chart path.
@@ -271,20 +317,35 @@ def plot_single_treatment_control_dumbbell(
         treatment_summary["treatment_group"] == "treatment", metric_column
     ].iloc[0]
 
-    plt.figure(figsize=(7, 2.8))
-    plt.plot([control_value, treatment_value], [0, 0], linewidth=2)
-    plt.scatter(control_value, 0, s=100, label="control")
-    plt.scatter(treatment_value, 0, s=100, label="treatment")
+    fig, ax = plt.subplots(figsize=(7, 2.8))
+    ax.plot([control_value, treatment_value], [0, 0], linewidth=2)
+    ax.scatter(control_value, 0, s=100, label="control")
+    ax.scatter(treatment_value, 0, s=100, label="treatment")
 
-    plt.yticks([])
-    plt.xlabel(metric_column.replace("_", " ").title())
-    plt.title(title)
-    plt.legend()
-    plt.tight_layout()
+    ax.annotate(
+        fmt.format(control_value),
+        (control_value, 0),
+        xytext=(0, 10),
+        textcoords="offset points",
+        ha="center",
+    )
+    ax.annotate(
+        fmt.format(treatment_value),
+        (treatment_value, 0),
+        xytext=(0, 10),
+        textcoords="offset points",
+        ha="center",
+    )
+
+    ax.set_yticks([])
+    ax.set_xlabel(metric_column.replace("_", " ").title())
+    ax.set_title(title)
+    ax.legend()
+    fig.tight_layout()
 
     output_path = OUTPUTS_CHARTS_DIR / filename
-    plt.savefig(output_path, dpi=300, bbox_inches="tight")
-    plt.close()
+    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
 
     return output_path
 
@@ -322,17 +383,20 @@ def plot_segment_outcome_heatmap_normalized(segment_summary: pd.DataFrame) -> Pa
         else:
             normalized_df[column] = 0.0
 
-    plt.figure(figsize=(10, 8))
-    plt.imshow(normalized_df.values, aspect="auto")
-    plt.colorbar(label="Normalized Intensity")
-    plt.xticks(range(len(normalized_df.columns)), normalized_df.columns, rotation=15)
-    plt.yticks(range(len(normalized_df.index)), normalized_df.index)
-    plt.title("Segment Outcome Heatmap (Normalized by Metric)")
-    plt.tight_layout()
+    fig, ax = plt.subplots(figsize=(10, 8))
+    im = ax.imshow(normalized_df.values, aspect="auto")
+    cbar = fig.colorbar(im, ax=ax)
+    cbar.set_label("Normalized Intensity")
+    ax.set_xticks(range(len(normalized_df.columns)))
+    ax.set_xticklabels(normalized_df.columns, rotation=15)
+    ax.set_yticks(range(len(normalized_df.index)))
+    ax.set_yticklabels(normalized_df.index)
+    ax.set_title("Segment Outcome Heatmap (Normalized by Metric)")
+    fig.tight_layout()
 
     output_path = OUTPUTS_CHARTS_DIR / "segment_outcome_heatmap_normalized.png"
-    plt.savefig(output_path, dpi=300, bbox_inches="tight")
-    plt.close()
+    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
 
     return output_path
 
@@ -342,6 +406,7 @@ def plot_ranked_history_segment_chart(
     metric_column: str,
     filename: str,
     title: str,
+    fmt: str,
 ) -> Path:
     """
     Create a ranked horizontal bar chart for history segments.
@@ -351,6 +416,7 @@ def plot_ranked_history_segment_chart(
         metric_column: Metric to plot.
         filename: Output filename.
         title: Chart title.
+        fmt: Value format string.
 
     Returns:
         Path: Saved chart path.
@@ -361,23 +427,35 @@ def plot_ranked_history_segment_chart(
 
     history_df = history_df.sort_values(metric_column, ascending=True)
 
-    plt.figure(figsize=(9, 5))
-    plt.barh(history_df["segment_value"], history_df[metric_column])
-    plt.title(title)
-    plt.xlabel(metric_column.replace("_", " ").title())
-    plt.ylabel("History Segment")
-    plt.tight_layout()
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.barh(history_df["segment_value"], history_df[metric_column])
+    ax.set_title(title)
+    ax.set_xlabel(metric_column.replace("_", " ").title())
+    ax.set_ylabel("History Segment")
+
+    for patch in ax.patches:
+        width = patch.get_width()
+        ax.annotate(
+            fmt.format(width),
+            (width, patch.get_y() + patch.get_height() / 2),
+            va="center",
+            ha="left",
+            xytext=(4, 0),
+            textcoords="offset points",
+        )
+
+    fig.tight_layout()
 
     output_path = OUTPUTS_CHARTS_DIR / filename
-    plt.savefig(output_path, dpi=300, bbox_inches="tight")
-    plt.close()
+    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
 
     return output_path
 
 
 def plot_campaign_outcome_bubble(campaign_summary: pd.DataFrame) -> Path:
     """
-    Create a bubble chart comparing campaign types across outcomes.
+    Create a polished bubble chart comparing campaign types across outcomes.
 
     Args:
         campaign_summary: Campaign-level summary table.
@@ -385,10 +463,10 @@ def plot_campaign_outcome_bubble(campaign_summary: pd.DataFrame) -> Path:
     Returns:
         Path: Saved chart path.
     """
-    bubble_sizes = campaign_summary["average_spend"] * 800
+    bubble_sizes = campaign_summary["average_spend"] * 900
 
-    plt.figure(figsize=(8, 5))
-    plt.scatter(
+    fig, ax = plt.subplots()
+    ax.scatter(
         campaign_summary["visit_rate"],
         campaign_summary["conversion_rate"],
         s=bubble_sizes,
@@ -396,21 +474,21 @@ def plot_campaign_outcome_bubble(campaign_summary: pd.DataFrame) -> Path:
     )
 
     for _, row in campaign_summary.iterrows():
-        plt.annotate(
+        ax.annotate(
             row["campaign_type"],
             (row["visit_rate"], row["conversion_rate"]),
             xytext=(5, 5),
             textcoords="offset points",
         )
 
-    plt.xlabel("Visit Rate")
-    plt.ylabel("Conversion Rate")
-    plt.title("Campaign Comparison Bubble Chart")
-    plt.tight_layout()
+    ax.set_xlabel("Visit Rate")
+    ax.set_ylabel("Conversion Rate")
+    ax.set_title("Campaign Comparison Bubble Chart")
+    fig.tight_layout()
 
     output_path = OUTPUTS_CHARTS_DIR / "campaign_outcome_bubble.png"
-    plt.savefig(output_path, dpi=300, bbox_inches="tight")
-    plt.close()
+    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
 
     return output_path
 
@@ -449,6 +527,8 @@ def main() -> None:
     Run the Python business-analysis pipeline on the processed dataset.
     """
     create_output_directories()
+    apply_chart_style()
+
     df = load_processed_data()
 
     outcome_overview = build_outcome_overview(df)
@@ -478,6 +558,7 @@ def main() -> None:
             metric_column="visit_rate",
             filename="treatment_control_visit_rate_dumbbell.png",
             title="Treatment vs Control: Visit Rate",
+            fmt="{:.3f}",
         )
     )
     chart_paths.append(
@@ -486,6 +567,7 @@ def main() -> None:
             metric_column="conversion_rate",
             filename="treatment_control_conversion_rate_dumbbell.png",
             title="Treatment vs Control: Conversion Rate",
+            fmt="{:.4f}",
         )
     )
     chart_paths.append(
@@ -494,6 +576,7 @@ def main() -> None:
             metric_column="average_spend",
             filename="treatment_control_average_spend_dumbbell.png",
             title="Treatment vs Control: Average Spend",
+            fmt="{:.2f}",
         )
     )
 
@@ -505,6 +588,7 @@ def main() -> None:
             metric_column="conversion_rate",
             filename="history_segment_conversion_rate_ranked.png",
             title="History Segment Ranking by Conversion Rate",
+            fmt="{:.4f}",
         )
     )
     chart_paths.append(
@@ -513,6 +597,7 @@ def main() -> None:
             metric_column="average_spend",
             filename="history_segment_average_spend_ranked.png",
             title="History Segment Ranking by Average Spend",
+            fmt="{:.2f}",
         )
     )
 

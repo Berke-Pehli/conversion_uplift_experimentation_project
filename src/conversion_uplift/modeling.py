@@ -61,6 +61,42 @@ def create_output_directories() -> None:
     OUTPUTS_CHARTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def apply_chart_style() -> None:
+    """
+    Apply a consistent clean plotting style.
+    """
+    plt.rcParams.update(
+        {
+            "figure.figsize": (8, 5),
+            "axes.titlesize": 14,
+            "axes.labelsize": 11,
+            "xtick.labelsize": 10,
+            "ytick.labelsize": 10,
+        }
+    )
+
+
+def prettify_model_name(model_name: str) -> str:
+    """
+    Convert internal model names into cleaner display labels.
+
+    Args:
+        model_name: Raw model name.
+
+    Returns:
+        str: Display-friendly model name.
+    """
+    mapping = {
+        "logistic_regression_balanced": "Logistic Regression",
+        "decision_tree_classifier_balanced": "Decision Tree",
+        "random_forest_classifier_balanced": "Random Forest",
+        "linear_regression": "Linear Regression",
+        "decision_tree_regressor": "Decision Tree",
+        "random_forest_regressor": "Random Forest",
+    }
+    return mapping.get(model_name, model_name)
+
+
 def load_csv(path: Path) -> pd.DataFrame:
     """
     Load a CSV file from disk.
@@ -198,11 +234,11 @@ def evaluate_classification_models(
             }
         )
 
-    results_df = pd.DataFrame(results).sort_values(
-        by="pr_auc", ascending=False
-    ).reset_index(drop=True)
-
-    return results_df
+    return (
+        pd.DataFrame(results)
+        .sort_values(by="pr_auc", ascending=False)
+        .reset_index(drop=True)
+    )
 
 
 def evaluate_regression_models(
@@ -244,23 +280,21 @@ def evaluate_regression_models(
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
-        rmse = root_mean_squared_error(y_test, y_pred)
-
         results.append(
             {
                 "target": target_name,
                 "model_name": model_name,
-                "rmse": rmse,
+                "rmse": root_mean_squared_error(y_test, y_pred),
                 "mae": mean_absolute_error(y_test, y_pred),
                 "r2_score": r2_score(y_test, y_pred),
             }
         )
 
-    results_df = pd.DataFrame(results).sort_values(
-        by="rmse", ascending=True
-    ).reset_index(drop=True)
-
-    return results_df
+    return (
+        pd.DataFrame(results)
+        .sort_values(by="rmse", ascending=True)
+        .reset_index(drop=True)
+    )
 
 
 def save_dataframe(df: pd.DataFrame, output_path: Path) -> Path:
@@ -279,35 +313,61 @@ def save_dataframe(df: pd.DataFrame, output_path: Path) -> Path:
     return output_path
 
 
+def add_bar_labels(ax: plt.Axes, fmt: str = "{:.3f}") -> None:
+    """
+    Add numeric labels above bars.
+
+    Args:
+        ax: Matplotlib axes object.
+        fmt: Number format string.
+    """
+    for patch in ax.patches:
+        height = patch.get_height()
+        ax.annotate(
+            fmt.format(height),
+            (patch.get_x() + patch.get_width() / 2, height),
+            ha="center",
+            va="bottom",
+            xytext=(0, 4),
+            textcoords="offset points",
+        )
+
+
 def plot_classification_metric_comparison(
     results_df: pd.DataFrame,
     metric_column: str,
     filename: str,
     title: str,
+    fmt: str = "{:.3f}",
 ) -> Path:
     """
-    Plot a classification metric comparison chart.
+    Plot a polished classification metric comparison chart.
 
     Args:
         results_df: Classification results DataFrame.
         metric_column: Metric column to plot.
         filename: Output filename.
         title: Chart title.
+        fmt: Label format.
 
     Returns:
         Path: Saved chart path.
     """
-    plt.figure(figsize=(8, 5))
-    plt.bar(results_df["model_name"], results_df[metric_column])
-    plt.title(title)
-    plt.xlabel("Model")
-    plt.ylabel(metric_column.replace("_", " ").upper())
-    plt.xticks(rotation=20)
-    plt.tight_layout()
+    plot_df = results_df.copy()
+    plot_df["display_model_name"] = plot_df["model_name"].apply(prettify_model_name)
+
+    fig, ax = plt.subplots()
+    ax.bar(plot_df["display_model_name"], plot_df[metric_column])
+    ax.set_title(title)
+    ax.set_xlabel("Model")
+    ax.set_ylabel(metric_column.replace("_", " ").upper())
+    ax.tick_params(axis="x", rotation=15)
+    add_bar_labels(ax, fmt=fmt)
+    fig.tight_layout()
 
     output_path = OUTPUTS_CHARTS_DIR / filename
-    plt.savefig(output_path, dpi=300, bbox_inches="tight")
-    plt.close()
+    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
 
     return output_path
 
@@ -317,30 +377,36 @@ def plot_regression_metric_comparison(
     metric_column: str,
     filename: str,
     title: str,
+    fmt: str = "{:.2f}",
 ) -> Path:
     """
-    Plot a regression metric comparison chart.
+    Plot a polished regression metric comparison chart.
 
     Args:
         results_df: Regression results DataFrame.
         metric_column: Metric column to plot.
         filename: Output filename.
         title: Chart title.
+        fmt: Label format.
 
     Returns:
         Path: Saved chart path.
     """
-    plt.figure(figsize=(8, 5))
-    plt.bar(results_df["model_name"], results_df[metric_column])
-    plt.title(title)
-    plt.xlabel("Model")
-    plt.ylabel(metric_column.replace("_", " ").upper())
-    plt.xticks(rotation=20)
-    plt.tight_layout()
+    plot_df = results_df.copy()
+    plot_df["display_model_name"] = plot_df["model_name"].apply(prettify_model_name)
+
+    fig, ax = plt.subplots()
+    ax.bar(plot_df["display_model_name"], plot_df[metric_column])
+    ax.set_title(title)
+    ax.set_xlabel("Model")
+    ax.set_ylabel(metric_column.replace("_", " ").upper())
+    ax.tick_params(axis="x", rotation=15)
+    add_bar_labels(ax, fmt=fmt)
+    fig.tight_layout()
 
     output_path = OUTPUTS_CHARTS_DIR / filename
-    plt.savefig(output_path, dpi=300, bbox_inches="tight")
-    plt.close()
+    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
 
     return output_path
 
@@ -364,6 +430,7 @@ def main() -> None:
     Run the refined baseline modeling pipeline.
     """
     create_output_directories()
+    apply_chart_style()
 
     features_df, conversion_df, visit_df, spend_df = load_modeling_inputs()
     X, _ = prepare_feature_matrix(features_df)
@@ -417,6 +484,7 @@ def main() -> None:
             metric_column="pr_auc",
             filename="conversion_model_pr_auc_comparison.png",
             title="Conversion Model PR-AUC Comparison",
+            fmt="{:.4f}",
         )
     )
     saved_paths.append(
@@ -425,6 +493,7 @@ def main() -> None:
             metric_column="pr_auc",
             filename="visit_model_pr_auc_comparison.png",
             title="Visit Model PR-AUC Comparison",
+            fmt="{:.4f}",
         )
     )
     saved_paths.append(
@@ -433,6 +502,7 @@ def main() -> None:
             metric_column="rmse",
             filename="spend_model_rmse_comparison.png",
             title="Spend Model RMSE Comparison",
+            fmt="{:.2f}",
         )
     )
 
