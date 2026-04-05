@@ -83,6 +83,13 @@ Additional project documentation is available in the `docs/` folder:
 
 ```text
 conversion_uplift_experimentation_project/
+├── bld/
+│   ├── data/
+│   │   ├── final/
+│   │   └── processed/
+│   ├── charts/
+│   └── reports/
+│
 ├── data/
 │   ├── final/
 │   │   ├── campaign_summary.csv
@@ -154,7 +161,7 @@ conversion_uplift_experimentation_project/
 │       └── uplift_segment_summary.csv
 │
 ├── powerbi/
-│   ├── conversion_uplift_experimentation_dashboard.pbix
+│   └── conversion_uplift_experimentation_dashboard.pbix
 │
 ├── sql/
 │   ├── 01_create_database.sql
@@ -202,6 +209,7 @@ conversion_uplift_experimentation_project/
 ├── .env
 ├── .env.example
 ├── .gitignore
+├── LICENSE
 ├── pixi.lock
 ├── pyproject.toml
 └── README.md
@@ -436,9 +444,59 @@ This makes the project more realistic, maintainable, and portfolio-ready.
 
 ---
 
+## Portfolio Outputs vs Reproducible Build Outputs
+
+This repository is designed to serve **two purposes at once**:
+
+### 1. Portfolio / showcase layer
+The repository includes tracked final outputs so that a reviewer can immediately inspect the project without running any code.
+
+These visible assets include items such as:
+- final reporting CSVs in `data/final/`
+- portfolio charts in `outputs/charts/`
+- report summaries in `outputs/reports/`
+- Power BI screenshots
+- ER diagram and supporting documentation
+
+This makes the project easier to evaluate quickly on GitHub.
+
+### 2. Reproducibility / build layer
+The project also supports a separate reproducible build layer through `pytask`.
+
+When running:
+
+```bash
+pixi run pytask
+```
+
+the pipeline writes fresh build artifacts into the ignored `bld/` folder, including:
+
+- `bld/data/processed/`
+- `bld/data/final/`
+- `bld/charts/`
+- `bld/reports/`
+
+The `bld/` folder is intentionally ignored by Git so that users can test pipeline reproducibility independently of the tracked showcase outputs.
+
+Users can remove `bld/` and rerun `pixi run pytask` to verify that the build artifacts are regenerated from code.
+
+### Why both layers exist
+
+This structure allows the repository to be both:
+
+- **easy to review** as a portfolio project
+- **easy to verify** as a reproducible analytics pipeline
+
+In other words:
+
+- tracked outputs help people see the finished work immediately
+- `bld/` helps people confirm that the workflow can regenerate outputs from code
+
+---
+
 ## Running the Project
 
-- Generated outputs are written to the project's structured data and output folders, including `data/processed/`, `data/final/`, `outputs/charts/`, and `outputs/reports/`.
+Generated tracked outputs are written to the project's structured data and output folders, including `data/processed/`, `data/final/`, `outputs/charts/`, and `outputs/reports/`.
 
 ### 1. Install the environment
 ```bash
