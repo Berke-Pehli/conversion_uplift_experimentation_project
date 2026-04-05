@@ -1,5 +1,13 @@
 # Conversion Uplift & Experimentation Analytics
 
+[![Python](https://img.shields.io/badge/python-Python-blue)](https://www.python.org/)
+[![MySQL](https://img.shields.io/badge/database-MySQL-4479A1)](https://www.mysql.com/)
+[![Power BI](https://img.shields.io/badge/BI-Power%20BI-F2C811)](https://powerbi.microsoft.com/)
+[![Environment](https://img.shields.io/badge/environment-Pixi-8E44AD)](https://pixi.sh/)
+[![Tests](https://img.shields.io/badge/tests-pytest-green)](https://pytest.org/)
+[![Workflow](https://img.shields.io/badge/workflow-pytask-orange)](https://pytask-dev.readthedocs.io/)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen)](#license)
+
 An end-to-end experimentation analytics project that measures the incremental impact of email campaigns on customer visits, conversions, and spend using **MySQL**, **Python**, **Power BI**, **Pixi**, **pytask**, and **pytest**.
 
 This project is built around the **Kevin Hillstrom / MineThatData** email marketing dataset and focuses on a core business question:
@@ -429,6 +437,8 @@ This makes the project more realistic, maintainable, and portfolio-ready.
 ---
 
 ## Running the Project
+
+- Generated outputs are written to the project's structured data and output folders, including `data/processed/`, `data/final/`, `outputs/charts/`, and `outputs/reports/`.
 
 ### 1. Install the environment
 ```bash
