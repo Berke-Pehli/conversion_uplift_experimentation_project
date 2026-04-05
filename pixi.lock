@@ -216,7 +216,7 @@ packages:
 - pypi: ./
   name: conversion-uplift-experimentation-project
   version: 0.1.0
-  sha256: 8a9d211a780a10448067ba3e3e201371a5091b340f5da505181175dc0e7ad913
+  sha256: 0e3ef44e9cc850de062ca796166c4aed9e188e963e2a34b9d3995e58c24142d5
   requires_dist:
   - pandas>=2.2
   - numpy>=1.26

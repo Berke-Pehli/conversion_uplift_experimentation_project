@@ -1,0 +1,2 @@
+n_rows,n_base_columns,n_encoded_feature_columns,n_numeric_features,n_categorical_features,target_visit_rate,target_conversion_rate,target_average_spend
+64000,15,23,6,4,0.14678125,0.00903125,1.0509082812500001
