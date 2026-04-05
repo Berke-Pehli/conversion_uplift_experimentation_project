@@ -4,7 +4,7 @@
 
 The purpose of this dashboard is to communicate the results of the email experimentation analysis in a stakeholder-friendly format.
 
-The dashboard should help answer the following business questions:
+The dashboard is built to help answer the following business questions:
 
 - Did the email campaigns outperform the control group?
 - Which campaign performed best?
@@ -16,16 +16,16 @@ This dashboard is designed to support product, CRM, and growth-style decision ma
 
 ---
 
-## 2. Recommended Dashboard Structure
+## 2. Dashboard Structure
 
-The dashboard should contain **4 main pages**:
+The dashboard is organized into **4 main pages**:
 
 1. **Executive Overview**
 2. **Experiment Performance**
 3. **Customer Segment Insights**
 4. **Detailed Drilldown**
 
-This keeps the report organized and avoids overloading a single page.
+This structure keeps the report organized and avoids overloading a single page.
 
 ---
 
@@ -37,7 +37,7 @@ Provide a quick top-level summary for a stakeholder who wants the main conclusio
 ### Main business question
 Did the campaign work, and which campaign performed best?
 
-### Recommended visuals
+### Included visuals
 - KPI cards:
   - total customers
   - overall visit rate
@@ -53,11 +53,11 @@ Did the campaign work, and which campaign performed best?
   - average spend per customer by campaign
 - short text box with key takeaway
 
-### Recommended data sources
+### Main data sources
 - `campaign_summary.csv`
 - `treatment_control_summary.csv`
 
-### Key takeaway to communicate
+### Key takeaway
 Email treatment outperformed control overall, and Mens E-Mail was the strongest aggregate campaign.
 
 ---
@@ -70,7 +70,7 @@ Focus on treatment vs control and uplift interpretation.
 ### Main business question
 How much incremental impact did the campaigns create?
 
-### Recommended visuals
+### Included visuals
 - KPI cards:
   - treatment visit rate
   - treatment conversion rate
@@ -86,14 +86,14 @@ How much incremental impact did the campaigns create?
   - absolute conversion uplift by campaign
 - bar chart:
   - absolute spend uplift by campaign
-- optional waterfall or decomposition view for spend uplift
+- compact uplift summary table
 
-### Recommended data sources
+### Main data sources
 - `campaign_summary.csv`
 - `treatment_control_summary.csv`
 - `segment_uplift_summary.csv`
 
-### Key takeaway to communicate
+### Key takeaway
 Both campaigns outperformed control, but Mens E-Mail generated the strongest lift.
 
 ---
@@ -106,7 +106,7 @@ Show that campaign performance is not uniform across all customers.
 ### Main business question
 Which segments respond better, and where should targeting be prioritized?
 
-### Recommended visuals
+### Included visuals
 - grouped bar chart:
   - performance by channel and campaign
 - grouped bar chart:
@@ -115,18 +115,15 @@ Which segments respond better, and where should targeting be prioritized?
   - performance by newbie flag and campaign
 - grouped bar chart:
   - performance by history segment and campaign
-- optional heatmap or matrix:
-  - channel × campaign
-  - zip code × campaign
-  - history segment × campaign
+- optional heatmap or matrix-style comparison where useful
 
-### Recommended data sources
+### Main data sources
 - `channel_campaign_summary.csv`
 - `zip_campaign_summary.csv`
 - `newbie_campaign_summary.csv`
 - `history_segment_campaign_summary.csv`
 
-### Key takeaway to communicate
+### Key takeaway
 Response varies meaningfully across customer segments, which supports more targeted treatment strategies.
 
 ---
@@ -137,9 +134,9 @@ Response varies meaningfully across customer segments, which supports more targe
 Provide a flexible exploration page for deeper filtering and detailed inspection.
 
 ### Main business question
-What happens when we filter the customer-level data by different attributes?
+What happens when customer-level results are filtered by different attributes?
 
-### Recommended visuals
+### Included visuals
 - detailed table:
   - customer-level experiment detail
 - slicers:
@@ -150,17 +147,15 @@ What happens when we filter the customer-level data by different attributes?
   - channel_name
   - newbie
   - history_segment
-- optional scatter plot:
+- scatter plot:
   - history vs spend
-- optional distribution chart:
-  - spend by campaign
-- optional table for filtered customer counts and outcomes
+- optional supporting visuals for deeper inspection
 
-### Recommended data source
+### Main data source
 - `customer_experiment_detail.csv`
 
-### Key takeaway to communicate
-This page supports exploration rather than summary. It should help identify more specific patterns and support stakeholder questions.
+### Key takeaway
+This page supports exploration rather than summary. It helps identify more specific patterns and answer stakeholder follow-up questions.
 
 ---
 
@@ -175,13 +170,13 @@ Suggested slicers:
 - newbie
 - history segment
 
-These slicers should be used carefully so the report remains readable.
+These slicers should be used carefully so the report remains readable and focused.
 
 ---
 
-## 8. Recommended KPI logic
+## 8. KPI logic emphasized in the dashboard
 
-Main KPIs to emphasize:
+Main KPIs emphasized across the report:
 - customer count
 - visit rate
 - conversion rate
@@ -190,13 +185,13 @@ Main KPIs to emphasize:
 - absolute uplift
 - relative lift
 
-These should be kept consistent across pages.
+These are kept consistent across pages so the dashboard tells one coherent story.
 
 ---
 
 ## 9. Storytelling order
 
-The report should tell a clear story in this order:
+The report is designed to tell a clear story in this order:
 
 1. **Did treatment work overall?**
 2. **Which campaign performed best?**
@@ -210,24 +205,26 @@ This sequence is important because it turns technical analysis into a business n
 
 ## 10. Dashboard design notes
 
-Recommended design principles:
+Design principles used in the dashboard:
 - keep the first page simple and executive-friendly
-- avoid too many visuals on one page
-- use page titles that sound business-oriented
+- avoid overcrowding visuals on one page
+- use business-oriented page titles
 - keep metric naming consistent
-- make segment analysis easy to compare visually
+- make segment comparisons easy to interpret visually
 - use the summary CSVs for most visuals
-- use the customer-level file mainly for drilldown or filtering
+- use the customer-level file mainly for drilldown and filtering
 
 ---
 
 ## 11. Portfolio presentation notes
 
 When presenting this dashboard in the portfolio, emphasize that it is based on:
+
 - a normalized MySQL schema
 - SQL validation and experiment analysis
 - reusable reporting views
 - exported reporting datasets
+- Python analysis and uplift work
 - stakeholder-oriented dashboard design
 
-This makes the dashboard more than just a BI exercise. It becomes the final layer of an end-to-end analytics workflow.
+This makes the dashboard more than just a BI exercise. It is the final communication layer of an end-to-end experimentation analytics workflow.

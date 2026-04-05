@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-The SQL phase of this project was designed to validate the loaded Hillstrom experiment data, analyze campaign performance, and build reusable reporting views for downstream reporting and modeling.
+The SQL phase of this project was designed to validate the loaded Hillstrom experiment data, analyze campaign performance, and build reusable reporting views for downstream reporting, dashboarding, and modeling.
 
 The main business questions were:
 
@@ -19,9 +19,10 @@ The main business questions were:
 The SQL layer is built on a normalized MySQL schema designed for experimentation analytics.  
 The schema separates customer attributes, campaign assignment, and campaign outcomes into dimension and fact tables for cleaner validation, analysis, and reporting.
 
-![Entity Relationship Diagram](schema/conversion_uplift_er_diagram.png)
+![Entity Relationship Diagram](../outputs/reports/schema/conversion_uplift_er_diagram.png)
 
 ### Interpretation
+
 The schema is centered around four dimension tables:
 
 - `dim_campaign`
@@ -35,6 +36,7 @@ and two fact tables:
 - `fact_campaign_outcomes`
 
 This design supports:
+
 - validation of experimental group structure
 - clean joins across customer and campaign data
 - reusable reporting views for Power BI and Python exports
@@ -46,6 +48,7 @@ This design supports:
 The SQL validation queries confirmed that the normalized MySQL schema was loaded correctly.
 
 ### Validation checks completed
+
 - row counts across all tables
 - duplicate primary key checks
 - null checks in critical columns
@@ -55,9 +58,11 @@ The SQL validation queries confirmed that the normalized MySQL schema was loaded
 - sample full-schema joins
 
 ### Validation result
+
 The validation phase showed that the database load was successful and structurally consistent.
 
 Key confirmed points:
+
 - lookup tables were populated correctly
 - each customer appeared once in the customer and fact tables
 - no major null or join integrity issues were detected
@@ -77,6 +82,7 @@ Key confirmed points:
 | No E-Mail | control | 0 | 21,306 |
 
 ### Interpretation
+
 The experiment groups are very well balanced. This supports meaningful comparison between treatment and control groups because the campaign populations are nearly equal in size.
 
 ---
@@ -90,9 +96,11 @@ The experiment groups are very well balanced. This supports meaningful compariso
 | Womens E-Mail | 21,387 | 0.1514 | 0.0088 | 1.0772 | 121.8948 | 23,038.11 |
 
 ### Interpretation
+
 Both email campaigns outperform the control group across the main top-line metrics.
 
 The strongest overall campaign is **Mens E-Mail**, which has:
+
 - the highest visit rate
 - the highest conversion rate
 - the highest average spend per customer
@@ -112,12 +120,13 @@ A notable nuance is that Womens E-Mail has the highest average spend per convert
 | 1 | 42,694 | 0.1670 | 0.0107 | 1.2496 | 53,349.80 |
 
 ### Interpretation
+
 Any email treatment performs better than the control group overall.
 
 This suggests that sending an email campaign is beneficial on average. The next business question is no longer whether email should be sent at all, but rather:
 
 - which customers should receive treatment
-- and which campaign variant is more effective for different segments
+- which campaign variant is more effective for different segments
 
 This directly supports the later uplift modeling phase.
 
@@ -132,9 +141,11 @@ This directly supports the later uplift modeling phase.
 | Mens E-Mail | 0.1828 | 0.0766 | 0.721281 | 0.0125 | 0.0068 | 1.192982 | 1.422617 | 0.769828 |
 
 ### Interpretation
+
 Both campaigns show positive uplift relative to control, but **Mens E-Mail** delivers the strongest incremental improvement.
 
 Compared with the control group, Mens E-Mail produces:
+
 - stronger visit uplift
 - stronger conversion uplift
 - stronger spend uplift
@@ -146,26 +157,31 @@ This is one of the most important findings of the SQL phase.
 ## 8. Segment-Level Findings
 
 ### 8.1 Channel-level findings
-The channel-level summary suggests that **Multichannel** customers respond particularly well to treatment. Campaign performance is still positive for Web and Phone groups, but the strongest results appear in Multichannel and Web for some metrics.
+
+The channel-level summary suggests that **Multichannel** customers respond particularly well to treatment. Campaign performance remains positive for Web and Phone groups, but the strongest results appear in Multichannel and Web for some metrics.
 
 This indicates that customer channel behavior may be an important segmentation variable for targeting.
 
 ### 8.2 Zip-code-level findings
+
 The zip-code summary shows that **Rural** customers respond especially well to campaign treatment, particularly under the Mens E-Mail campaign.
 
-This suggests geographic category may influence responsiveness and could be useful in later modeling and targeting strategies.
+This suggests that geographic category may influence responsiveness and could be useful in later modeling and targeting strategies.
 
 ### 8.3 New vs existing customers
+
 The `newbie` summary suggests that **existing customers** generally respond more strongly than newer customers, especially for visit rate and spend per customer.
 
 This aligns with common CRM behavior where more established customers are easier to reactivate.
 
 ### 8.4 Merchandise affinity
+
 The merchandise-affinity breakdown shows particularly strong results among customers with stronger prior merchandise engagement. In the subset where both `mens = 1` and `womens = 1`, the Mens E-Mail campaign performs very strongly.
 
 This suggests that prior category affinity is likely an important predictor of treatment response.
 
 ### 8.5 History segment
+
 The history-segment summary shows that customers with stronger historical value generally produce stronger campaign outcomes. Higher-spend history groups show higher visit, conversion, and spend outcomes than lower-spend groups.
 
 This supports the idea that customer value history should play an important role in targeting decisions.
@@ -221,6 +237,7 @@ To make the SQL output reusable, the project also includes reporting views such 
 - `vw_history_segment_campaign_summary`
 
 These views provide a cleaner reporting layer for:
+
 - SQL exploration
 - Power BI exports
 - Python extraction
@@ -233,7 +250,8 @@ These views provide a cleaner reporting layer for:
 The SQL phase answers the main aggregate business questions, but it does not yet tell us which **individual customers** should receive treatment.
 
 The next step is to use Python modeling to compare:
+
 - standard conversion prediction models
 - uplift-oriented approaches
 
-This will extend the analysis from aggregate performance into customer-level targeting strategy.
+This extends the analysis from aggregate performance into customer-level targeting strategy.
