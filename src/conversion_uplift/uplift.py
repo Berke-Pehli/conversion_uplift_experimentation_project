@@ -259,7 +259,7 @@ def build_uplift_decile_summary(scored_df: pd.DataFrame) -> pd.DataFrame:
     decile_df = add_uplift_deciles(scored_df)
 
     summary = (
-        decile_df.groupby("uplift_decile", as_index=False)
+        decile_df.groupby("uplift_decile", as_index=False, observed=False)
         .agg(
             customers=("customer_id", "count"),
             avg_uplift_score=("uplift_score", "mean"),
@@ -271,7 +271,7 @@ def build_uplift_decile_summary(scored_df: pd.DataFrame) -> pd.DataFrame:
 
     treated_summary = (
         decile_df.loc[decile_df["binary_treatment_flag"] == 1]
-        .groupby("uplift_decile", as_index=False)
+        .groupby("uplift_decile", as_index=False, observed=False)
         .agg(
             treated_customers=("customer_id", "count"),
             treated_conversion_rate=("conversion", "mean"),
@@ -280,7 +280,7 @@ def build_uplift_decile_summary(scored_df: pd.DataFrame) -> pd.DataFrame:
 
     control_summary = (
         decile_df.loc[decile_df["binary_treatment_flag"] == 0]
-        .groupby("uplift_decile", as_index=False)
+        .groupby("uplift_decile", as_index=False, observed=False)
         .agg(
             control_customers=("customer_id", "count"),
             control_conversion_rate=("conversion", "mean"),
