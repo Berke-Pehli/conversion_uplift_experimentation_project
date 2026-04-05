@@ -811,10 +811,33 @@ Open the `.pbix` file and explore the four dashboard pages.
 
 ---
 
+## License
+
+This project is licensed under the MIT License – see the `LICENSE` file for details.
+
+---
+
+## Contributing
+
+Contributions are welcome. A sensible workflow is:
+
+1. Fork the repository
+2. Create a feature branch
+3. Add or update tests
+4. Submit a pull request
+
+---
+
 ## Author
 
 **Berke Pehlivan**  
 Econometrics MSc — University of Bonn  
 Data Analytics | SQL | Python | Power BI | Econometrics | Statistics
 
+* [![GitHub](https://img.shields.io/badge/GitHub-Berke%20Pehlivan-black?logo=github)](https://github.com/Berke-Pehli)
+* [![LinkedIn](https://img.shields.io/badge/LinkedIn-Berke%20Pehlivan-blue?logo=linkedin)](https://www.linkedin.com/in/berkepehlivan/)
+
+
 This project is part of my portfolio work in analytics, experimentation, SQL, Python, and Power BI.
+
+**Questions?** Open an issue on GitHub or contact the author directly.
