@@ -60,6 +60,10 @@ Did the campaign work, and which campaign performed best?
 ### Key takeaway
 Email treatment outperformed control overall, and Mens E-Mail was the strongest aggregate campaign.
 
+### Dashboard preview
+
+![Page 1 — Executive Overview](../../outputs/reports/powerbi/page_1_executive_overview.png)
+
 ---
 
 ## 4. Page 2 — Experiment Performance
@@ -96,6 +100,10 @@ How much incremental impact did the campaigns create?
 ### Key takeaway
 Both campaigns outperformed control, but Mens E-Mail generated the strongest lift.
 
+### Dashboard preview
+
+![Page 2 — Experiment Performance](../../outputs/reports/powerbi/page_2_experiment_performance.png)
+
 ---
 
 ## 5. Page 3 — Customer Segment Insights
@@ -125,6 +133,10 @@ Which segments respond better, and where should targeting be prioritized?
 
 ### Key takeaway
 Response varies meaningfully across customer segments, which supports more targeted treatment strategies.
+
+### Dashboard preview
+
+![Page 3 — Customer Segment Insights](../../outputs/reports/powerbi/page_3_customer_segment_insights.png)
 
 ---
 
@@ -156,6 +168,10 @@ What happens when customer-level results are filtered by different attributes?
 
 ### Key takeaway
 This page supports exploration rather than summary. It helps identify more specific patterns and answer stakeholder follow-up questions.
+
+### Dashboard preview
+
+![Page 4 — Detailed Drilldown](../../outputs/reports/powerbi/page_4_detailed_drilldown.png)
 
 ---
 

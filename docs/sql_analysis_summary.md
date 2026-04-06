@@ -19,7 +19,56 @@ The main business questions were:
 The SQL layer is built on a normalized MySQL schema designed for experimentation analytics.  
 The schema separates customer attributes, campaign assignment, and campaign outcomes into dimension and fact tables for cleaner validation, analysis, and reporting.
 
-![Entity Relationship Diagram](../outputs/reports/schema/conversion_uplift_er_diagram.png)
+
+```mermaid
+erDiagram
+    DIM_CAMPAIGN {
+        INT campaign_id PK
+        VARCHAR segment
+        VARCHAR campaign_type
+        TINYINT binary_treatment_flag
+    }
+
+    DIM_CHANNEL {
+        INT channel_id PK
+        VARCHAR channel_name
+    }
+
+    DIM_ZIP_CODE {
+        INT zip_code_id PK
+        VARCHAR zip_code_name
+    }
+
+    DIM_CUSTOMERS {
+        INT customer_id PK
+        INT recency
+        VARCHAR history_segment
+        DECIMAL history
+        TINYINT mens
+        TINYINT womens
+        TINYINT newbie
+        INT zip_code_id FK
+        INT channel_id FK
+    }
+
+    FACT_CAMPAIGN_ASSIGNMENT {
+        INT customer_id FK
+        INT campaign_id FK
+    }
+
+    FACT_CAMPAIGN_OUTCOMES {
+        INT customer_id FK
+        TINYINT visit
+        TINYINT conversion
+        DECIMAL spend
+    }
+
+    DIM_ZIP_CODE ||--o{ DIM_CUSTOMERS : has
+    DIM_CHANNEL ||--o{ DIM_CUSTOMERS : has
+    DIM_CAMPAIGN ||--o{ FACT_CAMPAIGN_ASSIGNMENT : assigns
+    DIM_CUSTOMERS ||--|| FACT_CAMPAIGN_ASSIGNMENT : receives
+    DIM_CUSTOMERS ||--|| FACT_CAMPAIGN_OUTCOMES : generates
+```
 
 ### Interpretation
 
