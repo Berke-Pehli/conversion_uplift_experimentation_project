@@ -117,8 +117,6 @@ conversion_uplift_experimentation_project/
 │       ├── dashboard_notes.md
 │       └── measures_kpis.md
 │
-├── notebooks/
-│
 ├── outputs/
 │   ├── charts/
 │   │   ├── average_spend_by_campaign_type.png
@@ -187,6 +185,7 @@ conversion_uplift_experimentation_project/
 │       └── uplift.py
 │
 ├── tasks/
+│   ├── task_build_bld_mirror.py
 │   ├── task_build_reporting_tables.py
 │   ├── task_features.py
 │   ├── task_ingest_data.py
@@ -498,47 +497,74 @@ In other words:
 
 Generated tracked outputs are written to the project's structured data and output folders, including `data/processed/`, `data/final/`, `outputs/charts/`, and `outputs/reports/`.
 
-### 1. Install the environment
+Running `pixi run pytask` rebuilds the ignored `bld/` folder as a reproducible mirror of the project's main generated artifacts.
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/Berke-Pehli/conversion_uplift_experimentation_project.git
+cd conversion_uplift_experimentation_project
+```
+
+### 2. Create the local environment file
+```bash
+cp .env.example .env
+```
+
+If you want to run the database-related parts of the project, open `.env` and enter your own local MySQL credentials.
+
+This is required for steps such as `pixi run load-mysql`, `pixi run export`, and the full `pixi run pytask` pipeline. Users who only want to inspect the tracked outputs and documentation do not need to configure `.env`.
+
+### 3. Install the environment
 ```bash
 pixi install
 ```
-### 2. Run ingestion
+
+### 4. Run ingestion
 ```bash
 pixi run ingest
 ```
-### 3. Run preprocessing
+
+### 5. Run preprocessing
 ```bash
 pixi run preprocess
 ```
-### 4. Run Python analysis
+
+### 6. Run Python analysis
 ```bash
 pixi run analyze
 ```
-### 5. Build modeling features
+
+### 7. Build modeling features
 ```bash
 pixi run features
 ```
-### 6. Run baseline modeling
+
+### 8. Run baseline modeling
 ```bash
 pixi run model
 ```
-### 7. Run uplift modeling
+
+### 9. Run uplift modeling
 ```bash
 pixi run uplift
 ```
-### 8. Load data into MySQL
+
+### 10. Load data into MySQL
 ```bash
 pixi run load-mysql
 ```
-### 9. Export final reporting datasets
+
+### 11. Export final reporting datasets
 ```bash
 pixi run export
 ```
-### 10. Run pytest
+
+### 12. Run pytest
 ```bash
 pixi run pytest
 ```
-### 11. Run pytask pipeline
+
+### 13. Run pytask pipeline
 ```bash
 pixi run pytask
 ```
