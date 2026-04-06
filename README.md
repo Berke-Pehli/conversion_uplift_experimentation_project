@@ -644,56 +644,15 @@ This is required for steps such as `pixi run load-mysql`, `pixi run export`, and
 pixi install
 ```
 
-### 4. Run ingestion
-```bash
-pixi run ingest
-```
-
-### 5. Run preprocessing
-```bash
-pixi run preprocess
-```
-
-### 6. Run Python analysis
-```bash
-pixi run analyze
-```
-
-### 7. Build modeling features
-```bash
-pixi run features
-```
-
-### 8. Run baseline modeling
-```bash
-pixi run model
-```
-
-### 9. Run uplift modeling
-```bash
-pixi run uplift
-```
-
-### 10. Load data into MySQL
-```bash
-pixi run load-mysql
-```
-
-### 11. Export final reporting datasets
-```bash
-pixi run export
-```
-
-### 12. Run pytest
-```bash
-pixi run pytest
-```
-
-### 13. Run pytask pipeline
+### 4. Run pytask pipeline
 ```bash
 pixi run pytask
 ```
 
+### 5. Run pytest
+```bash
+pixi run pytest
+```
 ---
 
 ## SQL Analysis Highlights
