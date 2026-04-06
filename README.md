@@ -14,6 +14,38 @@ This project is built around the **Kevin Hillstrom / MineThatData** email market
 
 > Did the campaign truly create incremental value, and which customer groups responded best?
 
+## Table of Contents
+
+- [Executive Summary](#executive-summary)
+- [Business Problem](#business-problem)
+- [Project Goals](#project-goals)
+- [Tools & Technologies](#tools--technologies)
+- [Supporting Documentation](#supporting-documentation)
+- [Project Structure](#project-structure)
+- [End-to-End Workflow](#end-to-end-workflow)
+- [Project Workflow Diagram](#project-workflow-diagram)
+- [Dataset](#dataset)
+- [MySQL Data Model](#mysql-data-model)
+- [Entity Relationship Diagram](#entity-relationship-diagram)
+- [SQL Layer](#sql-layer)
+- [Python Pipeline](#python-pipeline)
+- [Reproducibility, Automation, and Testing](#reproducibility-automation-and-testing)
+- [Portfolio Outputs vs Reproducible Build Outputs](#portfolio-outputs-vs-reproducible-build-outputs)
+- [Running the Project](#running-the-project)
+- [SQL Analysis Highlights](#sql-analysis-highlights)
+- [Python Analysis Highlights](#python-analysis-highlights)
+- [Baseline Modeling Highlights](#baseline-modeling-highlights)
+- [Uplift Modeling Highlights](#uplift-modeling-highlights)
+- [Power BI Dashboard](#power-bi-dashboard)
+- [Key Business Insights](#key-business-insights)
+- [Why This Project Matters for My Portfolio](#why-this-project-matters-for-my-portfolio)
+- [Future Improvements](#future-improvements)
+- [How to Use This Repository](#how-to-use-this-repository)
+- [Repository Assets](#repository-assets)
+- [License](#license)
+- [Contributing](#contributing)
+- [Author](#author)
+
 ---
 
 ## Executive Summary
@@ -235,6 +267,49 @@ The project follows a realistic experimentation analytics workflow:
 
 ---
 
+## Project Workflow Diagram
+
+```mermaid
+flowchart TD
+    A["Raw Dataset"]
+    B["Preprocessing"]
+    C["Processed Data"]
+
+    D["MySQL Schema"]
+    E["SQL Views"]
+    F["Reporting Tables"]
+
+    G["Python Analysis"]
+    H["Feature Engineering"]
+    I["Baseline Modeling"]
+    J["Uplift Modeling"]
+
+    K["Portfolio Outputs"]
+    L["Power BI Dashboard"]
+    M["Reproducible Build"]
+
+    A --> B --> C
+
+    C --> D --> E --> F
+    C --> G
+    C --> H
+    H --> I
+    H --> J
+
+    G --> K
+    I --> K
+    J --> K
+    F --> K
+
+    F --> L
+    K --> L
+
+    F --> M
+    K --> M
+```
+
+---
+
 ## Dataset
 
 This project uses the **Kevin Hillstrom / MineThatData** email marketing dataset.
@@ -284,7 +359,57 @@ which makes validation, analysis, reporting, and export cleaner and more scalabl
 The project uses a normalized MySQL schema designed for experimentation analytics.  
 The schema separates customer attributes, campaign assignment, and campaign outcomes into dimension and fact tables for cleaner validation, analysis, and reporting.
 
-![Entity Relationship Diagram](outputs/reports/schema/conversion_uplift_er_diagram.png)
+```mermaid
+erDiagram
+    DIM_CAMPAIGN {
+        INT campaign_id PK
+        VARCHAR segment
+        VARCHAR campaign_type
+        TINYINT binary_treatment_flag
+    }
+
+    DIM_CHANNEL {
+        INT channel_id PK
+        VARCHAR channel_name
+    }
+
+    DIM_ZIP_CODE {
+        INT zip_code_id PK
+        VARCHAR zip_code_name
+    }
+
+    DIM_CUSTOMERS {
+        INT customer_id PK
+        INT recency
+        VARCHAR history_segment
+        DECIMAL history
+        TINYINT mens
+        TINYINT womens
+        TINYINT newbie
+        INT zip_code_id FK
+        INT channel_id FK
+    }
+
+    FACT_CAMPAIGN_ASSIGNMENT {
+        INT customer_id FK
+        INT campaign_id FK
+    }
+
+    FACT_CAMPAIGN_OUTCOMES {
+        INT customer_id FK
+        TINYINT visit
+        TINYINT conversion
+        DECIMAL spend
+    }
+
+    DIM_ZIP_CODE ||--o{ DIM_CUSTOMERS : has
+    DIM_CHANNEL ||--o{ DIM_CUSTOMERS : has
+    DIM_CAMPAIGN ||--o{ FACT_CAMPAIGN_ASSIGNMENT : assigns
+    DIM_CUSTOMERS ||--|| FACT_CAMPAIGN_ASSIGNMENT : receives
+    DIM_CUSTOMERS ||--|| FACT_CAMPAIGN_OUTCOMES : generates
+```
+
+A static exported schema image is also available at `outputs/reports/schema/conversion_uplift_er_diagram.png`.
 
 ---
 
